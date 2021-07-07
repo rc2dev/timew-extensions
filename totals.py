@@ -49,6 +49,7 @@ def format_seconds(seconds):
 
 
 def calculate_totals(input_stream):
+    grand_total = datetime.timedelta(0)
     from_zone = tz.tzutc()
     to_zone = tz.tzlocal()
 
@@ -82,6 +83,7 @@ def calculate_totals(input_stream):
             end = datetime.datetime.utcnow()
 
         tracked = end - start
+        grand_total += tracked
 
         if "tags" not in object or object["tags"] == []:
             if untagged is None:
@@ -133,17 +135,14 @@ def calculate_totals(input_stream):
         output.append("{} {}".format("-" * max_width, "----------"))
 
     # Compose table rows.
-    grand_total = 0
     for tag in sorted(totals, key=lambda tag: totals[tag].seconds, reverse=True):
         seconds = int(totals[tag].total_seconds())
         formatted = format_seconds(seconds)
-        grand_total += seconds
         output.append("{:{width}} {:10}".format(tag, formatted, width=max_width))
 
     if untagged is not None:
         seconds = int(untagged.total_seconds())
         formatted = format_seconds(seconds)
-        grand_total += seconds
         output.append("{:{width}} {:10}".format("", formatted, width=max_width))
 
     # Compose total.
@@ -152,7 +151,8 @@ def calculate_totals(input_stream):
     else:
         output.append("{} {}".format(" " * max_width, "----------"))
 
-    output.append("{:{width}} {:10}".format("Total", format_seconds(grand_total), width=max_width))
+    gt_seconds = int(grand_total.total_seconds())
+    output.append("{:{width}} {:10}".format("Total", format_seconds(gt_seconds), width=max_width))
     output.append("")
 
     return output
