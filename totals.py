@@ -2,6 +2,7 @@
 
 ###############################################################################
 #
+# Copyright 2021, Rafael Cavalcanti - rafaelc.org
 # Copyright 2016 - 2021, Thomas Lauf, Paul Beckingham, Federico Hernandez.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -133,7 +134,7 @@ def calculate_totals(input_stream):
 
     # Compose table rows.
     grand_total = 0
-    for tag in sorted(totals):
+    for tag in sorted(totals, key=lambda tag: totals[tag].seconds, reverse=True):
         seconds = int(totals[tag].total_seconds())
         formatted = format_seconds(seconds)
         grand_total += seconds
