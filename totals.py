@@ -50,6 +50,7 @@ def format_seconds(seconds):
 
 def calculate_totals(input_stream):
     grand_total = datetime.timedelta(0)
+    productive_total = datetime.timedelta(0)
     from_zone = tz.tzutc()
     to_zone = tz.tzlocal()
 
@@ -69,6 +70,9 @@ def calculate_totals(input_stream):
                     configuration[fields[0]] = ""
         else:
             body += line
+
+    # Get unproductive tags from config.
+    unproductive_tags = configuration.get('custom.unproductive_tags', '').split(',')
 
     # Sum the seconds tracked by tag.
     totals = dict()
@@ -97,8 +101,13 @@ def calculate_totals(input_stream):
                 else:
                     totals[tag] = tracked
 
+            for tag in object['tags']:
+                if tag not in unproductive_tags:
+                  productive_total += tracked
+                  break
+
     # Determine largest tag width.
-    max_width = len("Total")
+    max_width = len("Prod. Total")
     for tag in totals:
         if len(tag) > max_width:
             max_width = len(tag)
@@ -151,6 +160,8 @@ def calculate_totals(input_stream):
     else:
         output.append("{} {}".format(" " * max_width, "----------"))
 
+    pt_seconds = int(productive_total.total_seconds())
+    output.append("{:{width}} {:10}".format("Prod. Total", format_seconds(pt_seconds), width=max_width))
     gt_seconds = int(grand_total.total_seconds())
     output.append("{:{width}} {:10}".format("Total", format_seconds(gt_seconds), width=max_width))
     output.append("")
