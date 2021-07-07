@@ -138,32 +138,34 @@ def calculate_totals(input_stream):
 
     # Compose table header.
     if configuration["color"] == "on":
-        output.append("[4m{:{width}}[0m [4m{:>10}[0m".format("Tag", "Total", width=max_width))
+        output.append("[4m{:>1}[0m [4m{:{width}}[0m [4m{:>10}[0m"
+                .format("U", "Tag", "Total", width=max_width))
     else:
-        output.append("{:{width}} {:>10}".format("Tag", "Total", width=max_width))
-        output.append("{} {}".format("-" * max_width, "----------"))
+        output.append("{} {:{width}} {:>10}".format("U", "Tag", "Total", width=max_width))
+        output.append("{} {} {}".format("-", "-" * max_width, "----------"))
 
     # Compose table rows.
     for tag in sorted(totals, key=lambda tag: totals[tag].seconds, reverse=True):
         seconds = int(totals[tag].total_seconds())
         formatted = format_seconds(seconds)
-        output.append("{:{width}} {:10}".format(tag, formatted, width=max_width))
+        marker = "*" if tag in unproductive_tags else ""
+        output.append("{:1} {:{width}} {:10}".format(marker, tag, formatted, width=max_width))
 
     if untagged is not None:
         seconds = int(untagged.total_seconds())
         formatted = format_seconds(seconds)
-        output.append("{:{width}} {:10}".format("", formatted, width=max_width))
+        output.append("{:1} {:{width}} {:10}".format("", "", formatted, width=max_width))
 
     # Compose total.
     if configuration["color"] == "on":
-        output.append("{} {}".format(" " * max_width, "[4m          [0m"))
+        output.append("{} {}".format(" " * (max_width+2), "[4m          [0m"))
     else:
-        output.append("{} {}".format(" " * max_width, "----------"))
+        output.append("{} {}".format(" " * (max_width+2), "----------"))
 
     pt_seconds = int(productive_total.total_seconds())
-    output.append("{:{width}} {:10}".format("Prod. Total", format_seconds(pt_seconds), width=max_width))
+    output.append("{:1} {:{width}} {:10}".format("", "Prod. Total", format_seconds(pt_seconds), width=max_width))
     gt_seconds = int(grand_total.total_seconds())
-    output.append("{:{width}} {:10}".format("Total", format_seconds(gt_seconds), width=max_width))
+    output.append("{:1} {:{width}} {:10}".format("", "Total", format_seconds(gt_seconds), width=max_width))
     output.append("")
 
     return output

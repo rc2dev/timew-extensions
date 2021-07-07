@@ -8,6 +8,7 @@ This repository holds the Timewarrior extensions I use.
   - Sort tags by time, reversed (it was alphabetical).
   - Sum total time as clock time, instead of the sum of tags (it would sum every tag, duplicating periods with multiple tags).
   - Add separate total for productive tasks. Set `custom.unproductive_tags` on Timewarrior to use it.
+  - Add marker for unproductive tasks.
 
 ## License
 
